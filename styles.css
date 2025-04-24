@@ -1,0 +1,17 @@
+/* 기존 스타일 유지 */
+.toolbar {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+  }
+  .toolbar button {
+    padding: 8px 12px;
+    background: #5a9cf8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
