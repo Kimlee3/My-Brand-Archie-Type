@@ -21,83 +21,30 @@
 
   <script src="app.js"></script>
   <script>
-    // 저장 기능 (로컬 파일로 저장)
-    document.getElementById('save-btn').addEventListener('click', () => {
-        const data = {
-            nodes: nodes.map(node => ({
-                x: node.x,
-                y: node.y,
-                text: node.element.querySelector('.node-content').textContent,
-                isCentral: node.parent === null,
-                direction: node.direction
-            })),
-            connections: connections.map(conn => ({
-                fromIndex: nodes.indexOf(conn.fromNode),
-                toIndex: nodes.indexOf(conn.toNode)
-            }))
-        };
+  document.getElementById('save-btn').addEventListener('click', () => {
+    const data = {
+      nodes: nodes
+        .filter(node => node.element && node.element.querySelector('.node-content')) // ✅ element가 존재하는 노드만 저장
+        .map(node => ({
+          x: node.x,
+          y: node.y,
+          text: node.element.querySelector('.node-content').textContent,
+          isCentral: node.parent === null,
+          direction: node.direction
+        })),
+      connections: connections.map(conn => ({
+        fromIndex: nodes.indexOf(conn.fromNode),
+        toIndex: nodes.indexOf(conn.toNode)
+      }))
+    };
 
-        // JSON 파일 생성 및 다운로드
-        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `mindmap-${new Date().toISOString().slice(0, 10)}.mindmap`;
-        a.click();
-    });
-
-    // 초기화 버튼 기능
-    document.getElementById('reset-btn').addEventListener('click', () => {
-        if (confirm('모든 데이터를 초기화하시겠습니까?')) {
-            nodes = [];
-            connections = [];
-            document.getElementById('map').innerHTML = '';
-            document.getElementById('connections').innerHTML = '';
-
-            // 중앙 노드 생성
-            const centerX = document.getElementById('map-container').offsetWidth / 2 - 50;
-            const centerY = document.getElementById('map-container').offsetHeight / 2 - 25;
-            const centralNode = createNode(centerX, centerY, '메인 노드', null);
-            nodes.push(centralNode);
-        }
-    });
-
-    // 불러오기 기능
-    document.getElementById('load-btn').addEventListener('click', () => {
-        document.getElementById('file-input').click();
-    });
-
-    document.getElementById('file-input').addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                nodes = [];
-                connections = [];
-                document.getElementById('map').innerHTML = '';
-                document.getElementById('connections').innerHTML = '';
-
-                // 노드 복원
-                data.nodes.forEach(nodeData => {
-                    const node = createNode(nodeData.x, nodeData.y, nodeData.text, nodeData.isCentral ? null : {});
-                    nodes.push(node);
-                });
-
-                // 연결선 복원
-                data.connections.forEach(conn => {
-                    const fromNode = nodes[conn.fromIndex];
-                    const toNode = nodes[conn.toIndex];
-                    createConnection(fromNode, toNode);
-                });
-            } catch (error) {
-                alert('파일을 불러오는 중 오류가 발생했습니다.');
-            }
-        };
-        reader.readAsText(file);
-    });
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mindmap-${new Date().toISOString().slice(0, 10)}.mindmap`;
+    a.click();
+  });
   </script>
 </body>
 </html>
