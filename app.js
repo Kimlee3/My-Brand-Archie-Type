@@ -4,45 +4,46 @@ let connections = [];
 let zoomLevel = 1;
 
 function createNode(x, y, text = '노드', parent = null) {
-  const node = document.createElement('div');
-  node.className = parent ? 'node' : 'node central-node';  // Add class conditionally
-  node.style.left = x + 'px';
-  node.style.top = y + 'px';
+  const div = document.createElement('div');
+  div.className = parent ? 'node' : 'node central-node'; // 중앙 노드와 일반 노드 구분
+  div.style.left = `${x}px`;
+  div.style.top = `${y}px`;
 
   const content = document.createElement('div');
   content.className = 'node-content';
   content.contentEditable = true;
-  content.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const newX = parseInt(node.style.left) + 150;
-      const newY = parseInt(node.style.top) + (Math.random() * 100 - 50);
-      const newNode = createNode(newX, newY, '새 노드', node);
-      connectNodes(node, newNode);
-    }
-  });
-  content.innerText = text;
+  content.textContent = text;
+  div.appendChild(content);
 
   const addButton = document.createElement('button');
   addButton.className = 'add-btn';
-  addButton.innerText = '+';
+  addButton.textContent = '+';
   addButton.onclick = () => {
-    const newX = parseInt(node.style.left) + 150;
-    const newY = parseInt(node.style.top) + (Math.random() * 100 - 50);
-    const newNode = createNode(newX, newY, '새 노드', node);
-    connectNodes(node, newNode);
+    const newX = parseInt(div.style.left) + 150;
+    const newY = parseInt(div.style.top) + (Math.random() * 100 - 50);
+    const newNode = createNode(newX, newY, '새 노드', div);
+    connectNodes(div, newNode.element);
+  };
+  div.appendChild(addButton);
+
+  document.getElementById('map').appendChild(div);
+
+  makeDraggable(div);
+
+  // 노드 객체 반환
+  const node = {
+    x,                     // 노드의 x 좌표
+    y,                     // 노드의 y 좌표
+    text,                  // 노드의 텍스트
+    element: div,          // DOM 요소 참조
+    parent,                // 부모 노드 참조
+    direction: null        // 방향 (중앙 기준 좌우)
   };
 
-  node.appendChild(content);
-  node.appendChild(addButton);
-  map.appendChild(node);
-
-  makeDraggable(node);
-  nodes.push(node);
+  nodes.push(node); // 노드를 nodes 배열에 추가
   return node;
 }
 
-// 연결선 생성 함수
 function createConnection(fromNode, toNode) {
   const svg = document.getElementById("connections"); // SVG 요소 가져오기
   const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -61,7 +62,6 @@ function createConnection(fromNode, toNode) {
   updateConnectionPosition(fromNode, toNode, line);
 }
 
-// 특정 연결선의 위치를 업데이트하는 함수
 function updateConnectionPosition(fromNode, toNode, line) {
   const rect = document.getElementById('map-container').getBoundingClientRect();
 
@@ -82,7 +82,6 @@ function connectNodes(parent, child) {
   createConnection(parent, child);
 }
 
-// 모든 연결선의 위치를 업데이트하는 함수
 function updateConnections() {
   connections.forEach(({ fromNode, toNode, line }) => {
     updateConnectionPosition(fromNode, toNode, line);
