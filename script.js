@@ -1,70 +1,91 @@
+
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("quiz-form");
-  const resultCard = document.getElementById("result-card");
-  const quizContainer = document.getElementById("quiz-container");
-  const resultContainer = document.getElementById("result-container");
-  const submitBtn = document.getElementById("submit-btn");
-  const titleEl = document.getElementById("page-title");
-  const langSelect = document.getElementById("lang-select");
+  const lang = localStorage.getItem("lang") || "ko";
 
-  let currentLang = localStorage.getItem("lang") || "ko";
-  let currentPage = 0;
-  const pageSize = 5;
-
-  function renderUI() {
-    titleEl.textContent = uiText.title[currentLang];
-    submitBtn.textContent = uiText.submit[currentLang];
-    renderQuestions();
-  }
-
-  function renderQuestions() {
-    form.innerHTML = "";
-    const start = currentPage * pageSize;
-    const end = start + pageSize;
-    const currentQuestions = questions.slice(start, end);
-
-    currentQuestions.forEach((q, idx) => {
-      const index = start + idx;
-      const div = document.createElement("div");
-      div.setAttribute("id", `question-${index}`);
-      let html = `<p><strong>${index + 1}. ${q.text[currentLang]}</strong></p>`;
-      for (let i = 1; i <= 5; i++) {
-        html += `
-          <label style="margin-right: 12px;">
-            <input type="radio" name="q${index}" value="${i}" required> ${i}점
-          </label>
-        `;
-      }
-      div.innerHTML = html;
-      form.appendChild(div);
+  submitBtn.addEventListener("click", () => {
+    const firstUnanswered = questions.findIndex((q, idx) => {
+      return !document.querySelector(`input[name="q${idx}"]:checked`);
     });
 
-    const nav = document.createElement("div");
-    nav.classList.add("nav-buttons");
-    if (currentPage > 0) {
-      const prevBtn = document.createElement("button");
-      prevBtn.type = "button";
-      prevBtn.textContent = "◀ 이전";
-      prevBtn.onclick = () => {
-        currentPage--;
-        renderQuestions();
-      };
-      nav.appendChild(prevBtn);
+    if (firstUnanswered !== -1) {
+      const page = Math.floor(firstUnanswered / pageSize);
+      currentPage = page;
+      renderQuestions();
+      setTimeout(() => {
+        const el = document.getElementById(`question-${firstUnanswered}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        alert("📝 모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
+      }, 100);
+      return;
     }
-    if ((currentPage + 1) * pageSize < questions.length) {
-      const nextBtn = document.createElement("button");
-      nextBtn.type = "button";
-      nextBtn.textContent = "다음 ▶";
-      nextBtn.onclick = () => {
-        currentPage++;
-        renderQuestions();
-      };
-      nav.appendChild(nextBtn);
-    } else {
-      nav.appendChild(submitBtn);
+
+    const scores = {};
+    questions.forEach((q, idx) => {
+      const val = parseInt(document.querySelector(`input[name="q${idx}"]:checked`).value);
+      if (!scores[q.type]) scores[q.type] = 0;
+      scores[q.type] += val;
+    });
+
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const main = sorted[0][0];
+    const sub = sorted[1][0];
+
+    localStorage.setItem("result", `${main}-${sub}`);
+    submitBtn.disabled = true;
+    window.location.href = `result.html?result=${main}-${sub}&lang=${lang}`;
+  });
+
+  renderQuestions();
+});
+
+function renderQuestions() {
+  form.innerHTML = "";
+  const start = currentPage * pageSize;
+  const end = start + pageSize;
+  const currentQuestions = questions.slice(start, end);
+
+  currentQuestions.forEach((q, idx) => {
+    const index = start + idx;
+    const div = document.createElement("div");
+    div.setAttribute("id", `question-${index}`);
+    let html = `<p><strong>${index + 1}. ${q.text[lang]}</strong></p>`;
+    for (let i = 1; i <= 5; i++) {
+      html += `
+        <label style="margin-right: 12px;">
+          <input type="radio" name="q${index}" value="${i}" required> ${i}점
+        </label>
+      `;
     }
-    form.appendChild(nav);
+    div.innerHTML = html;
+    form.appendChild(div);
+  });
+
+  const nav = document.createElement("div");
+  nav.classList.add("nav-buttons");
+  if (currentPage > 0) {
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.textContent = "◀ 이전";
+    prevBtn.onclick = () => {
+      currentPage--;
+      renderQuestions();
+    };
+    nav.appendChild(prevBtn);
   }
+  if ((currentPage + 1) * pageSize < questions.length) {
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.textContent = "다음 ▶";
+    nextBtn.onclick = () => {
+      currentPage++;
+      renderQuestions();
+    };
+    nav.appendChild(nextBtn);
+  } else {
+    nav.appendChild(submitBtn);
+  }
+  form.appendChild(nav);
+}
 
   langSelect.value = currentLang;
   renderUI();
