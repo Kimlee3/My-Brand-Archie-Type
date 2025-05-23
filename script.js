@@ -124,7 +124,7 @@ function renderQuestions() {
   });
 
   submitBtn.addEventListener("click", () => {
-    const firstUnanswered = questions.findIndex((q, idx) => {
+    let firstUnanswered = questions.findIndex((q, idx) => {
       return !document.querySelector(`input[name="q${idx}"]:checked`);
     });
 
