@@ -1,6 +1,15 @@
+// 통합 script.js (설문 + 결과 화면 + 공유 기능 포함)
 
 document.addEventListener("DOMContentLoaded", () => {
   const lang = localStorage.getItem("lang") || "ko";
+  langSelect.value = lang;
+  renderUI();
+
+  langSelect.addEventListener("change", e => {
+    const newLang = e.target.value;
+    localStorage.setItem("lang", newLang);
+    location.reload();
+  });
 
   submitBtn.addEventListener("click", () => {
     const firstUnanswered = questions.findIndex((q, idx) => {
@@ -21,18 +30,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const scores = {};
     questions.forEach((q, idx) => {
-      const val = parseInt(document.querySelector(`input[name="q${idx}"]:checked`).value);
+      const val = Number(document.querySelector(`input[name="q${idx}"]:checked`)?.value || 0);
       if (!scores[q.type]) scores[q.type] = 0;
       scores[q.type] += val;
     });
 
     const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-    const main = sorted[0][0];
-    const sub = sorted[1][0];
+    if (sorted.length === 0) {
+      alert("점수 계산 오류가 발생했습니다.");
+      return;
+    }
 
-    localStorage.setItem("result", `${main}-${sub}`);
-    submitBtn.disabled = true;
-    window.location.href = `result.html?result=${main}-${sub}&lang=${lang}`;
+    const [main, sub] = sorted;
+    const mainType = main[0];
+    const subType = sub[0];
+
+    if (!archetypes[mainType] || !archetypes[mainType][lang]) {
+      alert("아키타입 데이터를 찾을 수 없습니다.");
+      return;
+    }
+
+    const mainData = archetypes[mainType][lang];
+    const subData = archetypes[subType][lang];
+
+    quizContainer.classList.add("hidden");
+    resultContainer.classList.remove("hidden");
+
+    const cardStyle = `border-left: 8px solid ${archetypes[mainType].color}; padding: 20px; background-color: #fdfdfd; border-radius: 8px;`;
+    const escapedDesc = (mainData.desc || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
+    const escapedComment = (mainData.comment || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
+
+    resultCard.innerHTML = `
+      <div style="${cardStyle}">
+        <h2>${archetypes[mainType].emoji || ''} ${mainData.name || ''} 타입</h2>
+        <p>🎯 <strong>메인 아키타입:</strong> ${mainData.name || ''} ${archetypes[mainType].emoji || ''}</p>
+        <p>🪄 <strong>서브 아키타입:</strong> ${subData.name || ''} ${archetypes[subType].emoji || ''}</p>
+        <p>💬 <strong>브랜드 톤:</strong> ${mainData.tone || ''}</p>
+        <p>🧠 <strong>키워드:</strong> ${mainData.keyword || ''}</p>
+        <p>📖 <strong>설명:</strong><br>${escapedDesc}</p>
+        <p>💡 <strong>실무 코멘트:</strong><br>${escapedComment}</p>
+        <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand || ''}</p>
+        <h3>📘 브랜드 아키타입 전체 구조</h3>
+        <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
+
+        <div id="share-section" style="margin-top: 24px;">
+          <p>📤 결과 공유하기:</p>
+          <button onclick="copyLink()">🔗 링크 복사</button>
+          <a href="#" id="twitter-share" target="_blank">🐦 트위터</a>
+          <a href="#" id="facebook-share" target="_blank">📘 페이스북</a>
+        </div>
+      </div>
+    `;
+
+    window.mainArchetype = mainType;
+    window.subArchetype = subType;
+    updateShareLinks(mainType, subType);
+  });
+
+  document.getElementById("download-btn").addEventListener("click", () => {
+    html2canvas(document.getElementById("result-card")).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "archetype_result.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
   });
 
   renderQuestions();
@@ -86,107 +147,6 @@ function renderQuestions() {
   }
   form.appendChild(nav);
 }
-
-  langSelect.value = currentLang;
-  renderUI();
-
-  langSelect.addEventListener("change", e => {
-    currentLang = e.target.value;
-    localStorage.setItem("lang", currentLang);
-    renderUI();
-  });
-
-  // 통합된 submitBtn 이벤트 리스너
-  submitBtn.addEventListener("click", () => {
-    // 1. 미응답 질문 체크
-    const firstUnanswered = questions.findIndex((q, idx) => {
-      return !document.querySelector(`input[name="q${idx}"]:checked`);
-    });
-
-    if (firstUnanswered !== -1) {
-      const page = Math.floor(firstUnanswered / pageSize);
-      currentPage = page;
-      renderQuestions();
-      setTimeout(() => {
-        const el = document.getElementById(`question-${firstUnanswered}`);
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        alert("📝 모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
-      }, 100);
-      return;
-    }
-
-    // 2. 점수 계산
-    const scores = {};
-    questions.forEach((q, idx) => {
-      const val = Number(document.querySelector(`input[name="q${idx}"]:checked`)?.value || 0);
-      if (!scores[q.type]) scores[q.type] = 0;
-      scores[q.type] += val;
-    });
-
-    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-    if (sorted.length === 0) {
-      alert("점수 계산 오류가 발생했습니다.");
-      return;
-    }
-
-    // 3. 결과 표시
-    const [main, sub] = sorted;
-    const mainType = main[0];
-    
-    // 안전한 데이터 접근
-    if (!archetypes[mainType] || !archetypes[mainType][currentLang]) {
-      alert("아키타입 데이터를 찾을 수 없습니다.");
-      return;
-    }
-    
-    const mainData = archetypes[mainType][currentLang];
-    const subData = archetypes[sub[0]][currentLang];
-
-    quizContainer.classList.add("hidden");
-    resultContainer.classList.remove("hidden");
-
-    const cardStyle = `border-left: 8px solid ${archetypes[mainType].color}; padding: 20px; background-color: #fdfdfd; border-radius: 8px;`;
-
-    // 안전한 문자열 처리
-    const escapedDesc = (mainData.desc || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
-    const escapedComment = (mainData.comment || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
-
-    resultCard.innerHTML = `
-      <div style="${cardStyle}">
-        <h2>${archetypes[mainType].emoji || ''} ${mainData.name || ''} 타입</h2>
-        <p>🎯 <strong>메인 아키타입:</strong> ${mainData.name || ''} ${archetypes[mainType].emoji || ''}</p>
-        <p>🪄 <strong>서브 아키타입:</strong> ${subData.name || ''} ${archetypes[sub[0]].emoji || ''}</p>
-        <p>💬 <strong>브랜드 톤:</strong> ${mainData.tone || ''}</p>
-        <p>🧠 <strong>키워드:</strong> ${mainData.keyword || ''}</p>
-        <p>📖 <strong>설명:</strong><br>${escapedDesc}</p>
-        <p>💡 <strong>실무 코멘트:</strong><br>${escapedComment}</p>
-        <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand || ''}</p>
-        <h3>📘 브랜드 아키타입 전체 구조</h3>
-        <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
-      
-        <div id="share-section" style="margin-top: 24px;">
-          <p>📤 결과 공유하기:</p>
-          <button onclick="copyLink()">🔗 링크 복사</button>
-          <a href="#" id="twitter-share" target="_blank">🐦 트위터</a>
-          <a href="#" id="facebook-share" target="_blank">📘 페이스북</a>
-        </div>
-      </div>
-    `; 
-    
-    window.mainArchetype = mainType;
-    window.subArchetype = sub[0];
-    updateShareLinks(mainType, sub[0]);
-  });
-
-  document.getElementById("download-btn").addEventListener("click", () => {
-    html2canvas(document.getElementById("result-card")).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "archetype_result.png";
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  });
-});
 
 function updateShareLinks(mainType, subType) {
   const baseUrl = window.location.origin + "/result.html";
