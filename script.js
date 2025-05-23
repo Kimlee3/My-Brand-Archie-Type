@@ -105,23 +105,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const [main, sub] = sorted;
-    const mainData = archetypes[main[0]][currentLang];
+    const mainType = main[0];
+    const mainData = archetypes[mainType][currentLang];
     const subData = archetypes[sub[0]][currentLang];
 
     quizContainer.classList.add("hidden");
     resultContainer.classList.remove("hidden");
 
+    const cardStyle = `border-left: 8px solid ${archetypes[mainType].color}; padding: 20px; background-color: #fdfdfd; border-radius: 8px;`;
+
     resultCard.innerHTML = `
-      <h2>${archetypes[main[0]].emoji} ${mainData.name} 타입</h2>
-      <p>🎯 <strong>메인 아키타입:</strong> ${mainData.name} ${archetypes[main[0]].emoji}</p>
-      <p>🪄 <strong>서브 아키타입:</strong> ${subData.name} ${archetypes[sub[0]].emoji}</p>
-      <p>💬 <strong>브랜드 톤:</strong> ${mainData.tone}</p>
-      <p>🧠 <strong>키워드:</strong> ${mainData.keyword}</p>
-      <p>📖 <strong>설명:</strong><br>${mainData.desc}</p>
-      <p>💡 <strong>실무 코멘트:</strong><br>${mainData.comment}</p>
-      <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand}</p>
-      <h3>📘 브랜드 아키타입 전체 구조</h3>
-      <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
+      <div style="${cardStyle}">
+        <h2>${archetypes[mainType].emoji} ${mainData.name} 타입</h2>
+        <p>🎯 <strong>메인 아키타입:</strong> ${mainData.name} ${archetypes[mainType].emoji}</p>
+        <p>🪄 <strong>서브 아키타입:</strong> ${subData.name} ${archetypes[sub[0]].emoji}</p>
+        <p>💬 <strong>브랜드 톤:</strong> ${mainData.tone}</p>
+        <p>🧠 <strong>키워드:</strong> ${mainData.keyword}</p>
+        <p>📖 <strong>설명:</strong><br>${mainData.desc}</p>
+        <p>💡 <strong>실무 코멘트:</strong><br>${mainData.comment}</p>
+        <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand}</p>
+        <h3>📘 브랜드 아키타입 전체 구조</h3>
+        <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
+      </div>
     `;
   });
 
