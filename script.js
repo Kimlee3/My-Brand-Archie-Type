@@ -1,5 +1,13 @@
 // 통합 및 완전 작동 가능한 script.js 전체 코드 (renderUI 포함)
 
+function renderUI() {
+  const langLabel = document.querySelector("label[for='lang-select']");
+  const lang = localStorage.getItem("lang") || "ko";
+  if (langLabel) {
+    langLabel.innerText = lang === "en" ? "Language" : lang === "de" ? "Sprache" : "언어";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const lang = localStorage.getItem("lang") || "ko";
   const langSelect = document.getElementById("lang-select");
@@ -99,14 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderQuestions();
 });
-
-function renderUI() {
-  const langLabel = document.querySelector("label[for='lang-select']");
-  const lang = localStorage.getItem("lang") || "ko";
-  if (langLabel) {
-    langLabel.innerText = lang === "en" ? "Language" : lang === "de" ? "Sprache" : "언어";
-  }
-}
 
 function renderQuestions() {
   form.innerHTML = "";
