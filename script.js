@@ -28,12 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const index = start + idx;
       const div = document.createElement("div");
       div.setAttribute("id", `question-${index}`);
-      div.innerHTML = `<label>${index + 1}. ${q.text[currentLang]}</label><br>
-        <input type="radio" name="q${index}" value="1" required> 1
-        <input type="radio" name="q${index}" value="2"> 2
-        <input type="radio" name="q${index}" value="3"> 3
-        <input type="radio" name="q${index}" value="4"> 4
-        <input type="radio" name="q${index}" value="5"> 5
+      div.innerHTML = `<p><strong>${index + 1}. ${q.text[currentLang]}</strong></p>
+        <label><input type="radio" name="q${index}" value="1" required> 1점</label>
+        <label><input type="radio" name="q${index}" value="2"> 2점</label>
+        <label><input type="radio" name="q${index}" value="3"> 3점</label>
+        <label><input type="radio" name="q${index}" value="4"> 4점</label>
+        <label><input type="radio" name="q${index}" value="5"> 5점</label>
       `;
       form.appendChild(div);
     });
