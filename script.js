@@ -8,39 +8,89 @@ document.addEventListener("DOMContentLoaded", () => {
   const langSelect = document.getElementById("lang-select");
 
   let currentLang = localStorage.getItem("lang") || "ko";
+  let currentPage = 0;
+  const pageSize = 5;
 
-  // UI 렌더링
   function renderUI() {
     titleEl.textContent = uiText.title[currentLang];
     submitBtn.textContent = uiText.submit[currentLang];
+    renderQuestions();
+  }
+
+  function renderQuestions() {
     form.innerHTML = "";
 
-    questions.forEach((q, idx) => {
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+    const currentQuestions = questions.slice(start, end);
+
+    currentQuestions.forEach((q, idx) => {
+      const index = start + idx;
       const div = document.createElement("div");
-      div.innerHTML = `<label>${idx + 1}. ${q.text[currentLang]}</label><br>
-        <input type="radio" name="q${idx}" value="1" required> 1
-        <input type="radio" name="q${idx}" value="2"> 2
-        <input type="radio" name="q${idx}" value="3"> 3
-        <input type="radio" name="q${idx}" value="4"> 4
-        <input type="radio" name="q${idx}" value="5"> 5
+      div.setAttribute("id", `question-${index}`);
+      div.innerHTML = `<label>${index + 1}. ${q.text[currentLang]}</label><br>
+        <input type="radio" name="q${index}" value="1" required> 1
+        <input type="radio" name="q${index}" value="2"> 2
+        <input type="radio" name="q${index}" value="3"> 3
+        <input type="radio" name="q${index}" value="4"> 4
+        <input type="radio" name="q${index}" value="5"> 5
       `;
       form.appendChild(div);
     });
+
+    const nav = document.createElement("div");
+    nav.classList.add("nav-buttons");
+    if (currentPage > 0) {
+      const prevBtn = document.createElement("button");
+      prevBtn.type = "button";
+      prevBtn.textContent = "◀ 이전";
+      prevBtn.onclick = () => {
+        currentPage--;
+        renderQuestions();
+      };
+      nav.appendChild(prevBtn);
+    }
+    if ((currentPage + 1) * pageSize < questions.length) {
+      const nextBtn = document.createElement("button");
+      nextBtn.type = "button";
+      nextBtn.textContent = "다음 ▶";
+      nextBtn.onclick = () => {
+        currentPage++;
+        renderQuestions();
+      };
+      nav.appendChild(nextBtn);
+    } else {
+      nav.appendChild(submitBtn);
+    }
+    form.appendChild(nav);
   }
 
-  // 초기 렌더
   langSelect.value = currentLang;
   renderUI();
 
-  // 언어 변경 시
   langSelect.addEventListener("change", e => {
     currentLang = e.target.value;
     localStorage.setItem("lang", currentLang);
     renderUI();
   });
 
-  // 제출 시 결과 계산
   submitBtn.addEventListener("click", () => {
+    const firstUnanswered = questions.findIndex((q, idx) => {
+      return !document.querySelector(`input[name="q${idx}"]:checked`);
+    });
+
+    if (firstUnanswered !== -1) {
+      const page = Math.floor(firstUnanswered / pageSize);
+      currentPage = page;
+      renderQuestions();
+      setTimeout(() => {
+        const el = document.getElementById(`question-${firstUnanswered}`);
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        alert("모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
+      }, 100);
+      return;
+    }
+
     const scores = {};
     questions.forEach((q, idx) => {
       const val = Number(document.querySelector(`input[name="q${idx}"]:checked`)?.value || 0);
@@ -49,6 +99,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    if (sorted.length === 0) {
+      alert("점수 계산 오류가 발생했습니다.");
+      return;
+    }
+
     const [main, sub] = sorted;
     const mainData = archetypes[main[0]][currentLang];
     const subData = archetypes[sub[0]][currentLang];
@@ -70,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   });
 
-  // 이미지 저장
   document.getElementById("download-btn").addEventListener("click", () => {
     html2canvas(document.getElementById("result-card")).then(canvas => {
       const link = document.createElement("a");
