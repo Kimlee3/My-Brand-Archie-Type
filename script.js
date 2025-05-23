@@ -17,8 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderQuestions();
   }
 
-  
-function renderQuestions() {
+  function renderQuestions() {
     form.innerHTML = "";
     const start = currentPage * pageSize;
     const end = start + pageSize;
@@ -65,53 +64,6 @@ function renderQuestions() {
       nav.appendChild(submitBtn);
     }
     form.appendChild(nav);
-}
-
-    form.innerHTML = "";
-
-    const start = currentPage * pageSize;
-    const end = start + pageSize;
-    const currentQuestions = questions.slice(start, end);
-
-    currentQuestions.forEach((q, idx) => {
-      const index = start + idx;
-      const div = document.createElement("div");
-      div.setAttribute("id", `question-${index}`);
-      div.innerHTML = `<label>${index + 1}. ${q.text[currentLang]}</label><br>
-        <input type="radio" name="q${index}" value="1" required> 1
-        <input type="radio" name="q${index}" value="2"> 2
-        <input type="radio" name="q${index}" value="3"> 3
-        <input type="radio" name="q${index}" value="4"> 4
-        <input type="radio" name="q${index}" value="5"> 5
-      `;
-      form.appendChild(div);
-    });
-
-    const nav = document.createElement("div");
-    nav.classList.add("nav-buttons");
-    if (currentPage > 0) {
-      const prevBtn = document.createElement("button");
-      prevBtn.type = "button";
-      prevBtn.textContent = "◀ 이전";
-      prevBtn.onclick = () => {
-        currentPage--;
-        renderQuestions();
-      };
-      nav.appendChild(prevBtn);
-    }
-    if ((currentPage + 1) * pageSize < questions.length) {
-      const nextBtn = document.createElement("button");
-      nextBtn.type = "button";
-      nextBtn.textContent = "다음 ▶";
-      nextBtn.onclick = () => {
-        currentPage++;
-        renderQuestions();
-      };
-      nav.appendChild(nextBtn);
-    } else {
-      nav.appendChild(submitBtn);
-    }
-    form.appendChild(nav);
   }
 
   langSelect.value = currentLang;
@@ -123,26 +75,9 @@ function renderQuestions() {
     renderUI();
   });
 
-  
-submitBtn.addEventListener("click", () => {
-  const firstUnanswered = questions.findIndex((q, idx) => {
-    return !document.querySelector(`input[name="q${idx}"]:checked`);
-  });
-
-  if (firstUnanswered !== -1) {
-    const page = Math.floor(firstUnanswered / pageSize);
-    currentPage = page;
-    renderQuestions();
-    setTimeout(() => {
-      const el = document.getElementById(`question-${firstUnanswered}`);
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      alert("📝 모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
-    }, 100);
-    return;
-  }
-}); // submitBtn listener 닫힘
-  }
-
+  // 통합된 submitBtn 이벤트 리스너
+  submitBtn.addEventListener("click", () => {
+    // 1. 미응답 질문 체크
     const firstUnanswered = questions.findIndex((q, idx) => {
       return !document.querySelector(`input[name="q${idx}"]:checked`);
     });
@@ -154,13 +89,12 @@ submitBtn.addEventListener("click", () => {
       setTimeout(() => {
         const el = document.getElementById(`question-${firstUnanswered}`);
         el.scrollIntoView({ behavior: "smooth", block: "center" });
-        alert("모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
+        alert("📝 모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
       }, 100);
       return;
-  }
-}); // submitBtn listener 닫힘
     }
 
+    // 2. 점수 계산
     const scores = {};
     questions.forEach((q, idx) => {
       const val = Number(document.querySelector(`input[name="q${idx}"]:checked`)?.value || 0);
@@ -172,10 +106,9 @@ submitBtn.addEventListener("click", () => {
     if (sorted.length === 0) {
       alert("점수 계산 오류가 발생했습니다.");
       return;
-  }
-}); // submitBtn listener 닫힘
     }
 
+    // 3. 결과 표시
     const [main, sub] = sorted;
     const mainType = main[0];
     const mainData = archetypes[mainType][currentLang];
@@ -199,18 +132,18 @@ submitBtn.addEventListener("click", () => {
         <h3>📘 브랜드 아키타입 전체 구조</h3>
         <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
       
-    <div id="share-section" style="margin-top: 24px;">
-      <p>📤 결과 공유하기:</p>
-      <button onclick="copyLink()">🔗 링크 복사</button>
-      <a href="#" id="twitter-share" target="_blank">🐦 트위터</a>
-      <a href="#" id="facebook-share" target="_blank">📘 페이스북</a>
-    </div>
-    </div>
+        <div id="share-section" style="margin-top: 24px;">
+          <p>📤 결과 공유하기:</p>
+          <button onclick="copyLink()">🔗 링크 복사</button>
+          <a href="#" id="twitter-share" target="_blank">🐦 트위터</a>
+          <a href="#" id="facebook-share" target="_blank">📘 페이스북</a>
+        </div>
+      </div>
     `; 
+    
     window.mainArchetype = mainType;
     window.subArchetype = sub[0];
     updateShareLinks(mainType, sub[0]);
-
   });
 
   document.getElementById("download-btn").addEventListener("click", () => {
