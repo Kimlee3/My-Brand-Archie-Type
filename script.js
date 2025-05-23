@@ -139,7 +139,8 @@ function renderQuestions() {
       }, 100);
       return;
     }
-
+});
+    
     const scores = {};
     questions.forEach((q, idx) => {
       const val = Number(document.querySelector(`input[name="q${idx}"]:checked`)?.value || 0);
