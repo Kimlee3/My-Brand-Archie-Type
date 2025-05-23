@@ -74,7 +74,18 @@ document.addEventListener("DOMContentLoaded", () => {
     renderUI();
   });
 
-  submitBtn.addEventListener("click", () => {
+  
+submitBtn.addEventListener("click", () => {
+  const firstUnanswered = questions.findIndex((q, idx) => {
+    return !document.querySelector(`input[name="q${idx}"]:checked`);
+  });
+
+  console.log("👉 총 문항 수:", questions.length);
+  for (let i = 0; i < questions.length; i++) {
+    const val = document.querySelector(`input[name="q${i}"]:checked`);
+    console.log(`Q${i + 1}:`, val ? val.value : "❌ 미응답 또는 인식 안됨");
+  }
+
     const firstUnanswered = questions.findIndex((q, idx) => {
       return !document.querySelector(`input[name="q${idx}"]:checked`);
     });
