@@ -10,7 +10,17 @@ const uiText = {
     ko: "제출",
     en: "Submit",
     de: "Absenden"
-  }
+  },
+  // 결과 화면 레이블 텍스트 추가
+  resultTitleSuffix: { ko: " 타입", en: " Type", de: " Typ" },
+  mainArchetypeLabel: { ko: "🎯 메인 아키타입:", en: "🎯 Main Archetype:", de: "🎯 Hauptarchetyp:" },
+  subArchetypeLabel: { ko: "🪄 서브 아키타입:", en: "🪄 Sub Archetype:", de: "🪄 Subarchetyp:" },
+  brandToneLabel: { ko: "💬 브랜드 톤:", en: "💬 Brand Tone:", de: "💬 Marken-Ton:" },
+  keywordLabel: { ko: "🧠 키워드:", en: "🧠 Keywords:", de: "🧠 Schlüsselwörter:" },
+  descriptionLabel: { ko: "📖 설명:", en: "📖 Description:", de: "📖 Beschreibung:" },
+  commentLabel: { ko: "💡 실무 코멘트:", en: "💡 Practical Comment:", de: "💡 Praktischer Kommentar:" },
+  brandLabel: { ko: "🔍 대표 브랜드:", en: "🔍 Representative Brands:", de: "🔍 Repräsentative Marken:" },
+  structureTitle: { ko: "📘 브랜드 아키타입 전체 구조", en: "📘 Brand Archetype Structure", de: "📘 Marken-Archetypen-Struktur" }
 };
 
 // 25문항 예시 (간단화된 문장 사용)
