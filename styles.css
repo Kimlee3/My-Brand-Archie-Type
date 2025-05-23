@@ -4,27 +4,28 @@
   --bg: #f9f5ef;
   --card: #fffaf3;
   --accent: #e26a2c;
-  --font-main: #1d1d1d;
-  --line: #ccc;
+  --accent-hover: #d05a25;
+  --font-main: #333333;
+  --line: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.08);
 }
 
 body {
   font-family: 'Pretendard', sans-serif;
-  background: var(--bg);
-  background-image: radial-gradient(circle, rgba(0,0,0,0.015) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-color: var(--bg);
   color: var(--font-main);
   margin: 0;
   padding: 0;
+  line-height: 1.6;
 }
 
 .container {
   max-width: 800px;
   margin: 40px auto;
-  padding: 32px 24px;
+  padding: 32px;
   background: var(--card);
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 20px var(--shadow-color);
   border: 1px solid var(--line);
   text-align: center;
 }
@@ -33,37 +34,67 @@ body {
   display: none;
 }
 
-h1, h2, h3 {
+h1 {
   font-weight: 700;
   color: var(--font-main);
   text-align: center;
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-weight: 700;
+  color: var(--font-main);
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+h3 {
+  font-weight: 700;
+  color: var(--font-main);
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 form > div {
-  margin-bottom: 24px;
-  padding: 12px 0;
-  border-bottom: 1px dashed var(--line);
+  margin-bottom: 30px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+form > div:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 form p {
-  font-size: 16px;
-  margin-bottom: 10px;
-  text-align: left;
+  font-size: 17px;
+  margin-bottom: 15px;
+  font-weight: 500;
 }
 
 form label {
   font-size: 15px;
-  margin: 4px 10px;
+  padding: 10px 15px;
   display: inline-flex;
   align-items: center;
   cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  border-radius: 6px;
+  margin: 4px;
+}
+
+form label:hover {
+  background-color: #f0f0f0;
 }
 
 input[type="radio"] {
   width: 18px;
   height: 18px;
   accent-color: var(--accent);
-  margin-right: 6px;
+  margin-right: 8px;
 }
 
 button {
@@ -71,26 +102,45 @@ button {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 14px 24px;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 15px;
-  margin: 10px;
+  font-size: 16px;
+  margin: 15px auto;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s ease-in-out;
+  display: inline-block;
 }
 
 button:hover {
-  background: #c9571f;
+  background: var(--accent-hover);
+}
+
+.nav-buttons {
+  margin-top: 30px;
+}
+
+.nav-buttons button {
+  margin: 0 10px;
 }
 
 #result-card {
-  text-align: left;
-  background: white;
+  background: var(--card);
   border-radius: 12px;
-  padding: 24px;
+  padding: 30px;
   border: 1px solid var(--line);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+#result-card p {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+#result-card strong {
+  font-weight: 700;
 }
 
 .language-switcher {
