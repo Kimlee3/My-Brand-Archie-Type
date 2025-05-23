@@ -123,8 +123,27 @@ function renderQuestions() {
     renderUI();
   });
 
-  submitBtn.addEventListener("click", () => {
-    let firstUnanswered = questions.findIndex((q, idx) => {
+  
+submitBtn.addEventListener("click", () => {
+  const firstUnanswered = questions.findIndex((q, idx) => {
+    return !document.querySelector(`input[name="q${idx}"]:checked`);
+  });
+
+  if (firstUnanswered !== -1) {
+    const page = Math.floor(firstUnanswered / pageSize);
+    currentPage = page;
+    renderQuestions();
+    setTimeout(() => {
+      const el = document.getElementById(`question-${firstUnanswered}`);
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      alert("📝 모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
+    }, 100);
+    return;
+  }
+}); // submitBtn listener 닫힘
+  }
+
+    const firstUnanswered = questions.findIndex((q, idx) => {
       return !document.querySelector(`input[name="q${idx}"]:checked`);
     });
 
@@ -138,9 +157,10 @@ function renderQuestions() {
         alert("모든 질문에 응답해주세요. 미응답 항목으로 이동했습니다.");
       }, 100);
       return;
+  }
+}); // submitBtn listener 닫힘
     }
-});
-    
+
     const scores = {};
     questions.forEach((q, idx) => {
       const val = Number(document.querySelector(`input[name="q${idx}"]:checked`)?.value || 0);
@@ -152,6 +172,8 @@ function renderQuestions() {
     if (sorted.length === 0) {
       alert("점수 계산 오류가 발생했습니다.");
       return;
+  }
+}); // submitBtn listener 닫힘
     }
 
     const [main, sub] = sorted;
