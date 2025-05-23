@@ -111,6 +111,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. 결과 표시
     const [main, sub] = sorted;
     const mainType = main[0];
+    
+    // 안전한 데이터 접근
+    if (!archetypes[mainType] || !archetypes[mainType][currentLang]) {
+      alert("아키타입 데이터를 찾을 수 없습니다.");
+      return;
+    }
+    
     const mainData = archetypes[mainType][currentLang];
     const subData = archetypes[sub[0]][currentLang];
 
@@ -119,16 +126,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cardStyle = `border-left: 8px solid ${archetypes[mainType].color}; padding: 20px; background-color: #fdfdfd; border-radius: 8px;`;
 
+    // 안전한 문자열 처리
+    const escapedDesc = (mainData.desc || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
+    const escapedComment = (mainData.comment || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
+
     resultCard.innerHTML = `
       <div style="${cardStyle}">
-        <h2>${archetypes[mainType].emoji} ${mainData.name} 타입</h2>
-        <p>🎯 <strong>메인 아키타입:</strong> ${mainData.name} ${archetypes[mainType].emoji}</p>
-        <p>🪄 <strong>서브 아키타입:</strong> ${subData.name} ${archetypes[sub[0]].emoji}</p>
-        <p>💬 <strong>브랜드 톤:</strong> ${mainData.tone}</p>
-        <p>🧠 <strong>키워드:</strong> ${mainData.keyword}</p>
-        <p>📖 <strong>설명:</strong><br>${mainData.desc}</p>
-        <p>💡 <strong>실무 코멘트:</strong><br>${mainData.comment}</p>
-        <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand}</p>
+        <h2>${archetypes[mainType].emoji || ''} ${mainData.name || ''} 타입</h2>
+        <p>🎯 <strong>메인 아키타입:</strong> ${mainData.name || ''} ${archetypes[mainType].emoji || ''}</p>
+        <p>🪄 <strong>서브 아키타입:</strong> ${subData.name || ''} ${archetypes[sub[0]].emoji || ''}</p>
+        <p>💬 <strong>브랜드 톤:</strong> ${mainData.tone || ''}</p>
+        <p>🧠 <strong>키워드:</strong> ${mainData.keyword || ''}</p>
+        <p>📖 <strong>설명:</strong><br>${escapedDesc}</p>
+        <p>💡 <strong>실무 코멘트:</strong><br>${escapedComment}</p>
+        <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand || ''}</p>
         <h3>📘 브랜드 아키타입 전체 구조</h3>
         <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
       
