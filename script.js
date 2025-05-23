@@ -103,15 +103,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     resultCard.innerHTML = `
       <div style="${cardStyle}">
-        <h2>${archetypes[mainType].emoji || ''} ${mainData.name || ''} 타입</h2>
-        <p>🎯 <strong>메인 아키타입:</strong> ${mainData.name || ''} ${archetypes[mainType].emoji || ''}</p>
-        <p>🪄 <strong>서브 아키타입:</strong> ${subData.name || ''} ${archetypes[subType].emoji || ''}</p>
-        <p>💬 <strong>브랜드 톤:</strong> ${mainData.tone || ''}</p>
-        <p>🧠 <strong>키워드:</strong> ${mainData.keyword || ''}</p>
-        <p>📖 <strong>설명:</strong><br>${escapedDesc}</p>
-        <p>💡 <strong>실무 코멘트:</strong><br>${escapedComment}</p>
-        <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand || ''}</p>
-        <h3>📘 브랜드 아키타입 전체 구조</h3>
+        <h2>${archetypes[mainType].emoji || ''} ${mainData.name || ''}${uiText.resultTitleSuffix[lang] || ''}</h2>
+        <p>${uiText.mainArchetypeLabel[lang] || ''} ${mainData.name || ''} ${archetypes[mainType].emoji || ''}</p>
+        <p>${uiText.subArchetypeLabel[lang] || ''} ${subData.name || ''} ${archetypes[subType].emoji || ''}</p>
+        <p>${uiText.brandToneLabel[lang] || ''} ${mainData.tone || ''}</p>
+        <p>${uiText.keywordLabel[lang] || ''} ${mainData.keyword || ''}</p>
+        <p>${uiText.descriptionLabel[lang] || ''}<br>${escapedDesc}</p>
+        <p>${uiText.commentLabel[lang] || ''}<br>${escapedComment}</p>
+        <p>${uiText.brandLabel[lang] || ''} ${mainData.brand || ''}</p>
+        <h3>${uiText.structureTitle[lang] || ''}</h3>
         <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
       </div>
     `;
@@ -209,4 +209,3 @@ function renderQuestions() {
   }
   form.appendChild(nav);
 }
-
