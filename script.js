@@ -17,7 +17,56 @@ document.addEventListener("DOMContentLoaded", () => {
     renderQuestions();
   }
 
-  function renderQuestions() {
+  
+function renderQuestions() {
+    form.innerHTML = "";
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+    const currentQuestions = questions.slice(start, end);
+
+    currentQuestions.forEach((q, idx) => {
+      const index = start + idx;
+      const div = document.createElement("div");
+      div.setAttribute("id", `question-${index}`);
+      let html = `<p><strong>${index + 1}. ${q.text[currentLang]}</strong></p>`;
+      for (let i = 1; i <= 5; i++) {
+        html += `
+          <label style="margin-right: 12px;">
+            <input type="radio" name="q${index}" value="${i}" required> ${i}점
+          </label>
+        `;
+      }
+      div.innerHTML = html;
+      form.appendChild(div);
+    });
+
+    const nav = document.createElement("div");
+    nav.classList.add("nav-buttons");
+    if (currentPage > 0) {
+      const prevBtn = document.createElement("button");
+      prevBtn.type = "button";
+      prevBtn.textContent = "◀ 이전";
+      prevBtn.onclick = () => {
+        currentPage--;
+        renderQuestions();
+      };
+      nav.appendChild(prevBtn);
+    }
+    if ((currentPage + 1) * pageSize < questions.length) {
+      const nextBtn = document.createElement("button");
+      nextBtn.type = "button";
+      nextBtn.textContent = "다음 ▶";
+      nextBtn.onclick = () => {
+        currentPage++;
+        renderQuestions();
+      };
+      nav.appendChild(nextBtn);
+    } else {
+      nav.appendChild(submitBtn);
+    }
+    form.appendChild(nav);
+}
+
     form.innerHTML = "";
 
     const start = currentPage * pageSize;
@@ -28,12 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const index = start + idx;
       const div = document.createElement("div");
       div.setAttribute("id", `question-${index}`);
-      div.innerHTML = `<p><strong>${index + 1}. ${q.text[currentLang]}</strong></p>
-        <label><input type="radio" name="q${index}" value="1" required> 1점</label>
-        <label><input type="radio" name="q${index}" value="2"> 2점</label>
-        <label><input type="radio" name="q${index}" value="3"> 3점</label>
-        <label><input type="radio" name="q${index}" value="4"> 4점</label>
-        <label><input type="radio" name="q${index}" value="5"> 5점</label>
+      div.innerHTML = `<label>${index + 1}. ${q.text[currentLang]}</label><br>
+        <input type="radio" name="q${index}" value="1" required> 1
+        <input type="radio" name="q${index}" value="2"> 2
+        <input type="radio" name="q${index}" value="3"> 3
+        <input type="radio" name="q${index}" value="4"> 4
+        <input type="radio" name="q${index}" value="5"> 5
       `;
       form.appendChild(div);
     });
@@ -74,18 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderUI();
   });
 
-  
-submitBtn.addEventListener("click", () => {
-  const firstUnanswered = questions.findIndex((q, idx) => {
-    return !document.querySelector(`input[name="q${idx}"]:checked`);
-  });
-
-  console.log("👉 총 문항 수:", questions.length);
-  for (let i = 0; i < questions.length; i++) {
-    const val = document.querySelector(`input[name="q${i}"]:checked`);
-    console.log(`Q${i + 1}:`, val ? val.value : "❌ 미응답 또는 인식 안됨");
-  }
-
+  submitBtn.addEventListener("click", () => {
     const firstUnanswered = questions.findIndex((q, idx) => {
       return !document.querySelector(`input[name="q${idx}"]:checked`);
     });
