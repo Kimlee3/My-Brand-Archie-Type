@@ -126,8 +126,19 @@ document.addEventListener("DOMContentLoaded", () => {
         <p>🔍 <strong>대표 브랜드:</strong> ${mainData.brand}</p>
         <h3>📘 브랜드 아키타입 전체 구조</h3>
         <img src="archetype-wheel.png" style="max-width:100%; margin-top:20px;" />
-      </div>
-    `;
+      
+    <div id="share-section" style="margin-top: 24px;">
+      <p>📤 결과 공유하기:</p>
+      <button onclick="copyLink()">🔗 링크 복사</button>
+      <a href="#" id="twitter-share" target="_blank">🐦 트위터</a>
+      <a href="#" id="facebook-share" target="_blank">📘 페이스북</a>
+    </div>
+    </div>
+    `; 
+    window.mainArchetype = mainType;
+    window.subArchetype = sub[0];
+    updateShareLinks(mainType, sub[0]);
+
   });
 
   document.getElementById("download-btn").addEventListener("click", () => {
@@ -139,3 +150,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+function updateShareLinks(mainType, subType) {
+  const baseUrl = window.location.origin + "/result.html";
+  const resultLink = `${baseUrl}?result=${mainType}-${subType}&lang=${localStorage.getItem("lang") || "ko"}`;
+  const message = `${mainType}와 ${subType} 유형 결과를 확인해보세요!`;
+
+  const twitter = document.getElementById("twitter-share");
+  const facebook = document.getElementById("facebook-share");
+
+  if (twitter && facebook) {
+    twitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(resultLink)}`;
+    facebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(resultLink)}`;
+  }
+}
+
+function copyLink() {
+  const baseUrl = window.location.origin + "/result.html";
+  const resultLink = `${baseUrl}?result=${window.mainArchetype}-${window.subArchetype}&lang=${localStorage.getItem("lang") || "ko"}`;
+  navigator.clipboard.writeText(resultLink).then(() => {
+    alert("🔗 링크가 복사되었습니다!");
+  });
+}
