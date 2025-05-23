@@ -1,3 +1,5 @@
+// 완전 작동하는 통합 script.js 코드
+
 function renderUI() {
   const langLabel = document.querySelector("label[for='lang-select']");
   const lang = localStorage.getItem("lang") || "ko";
