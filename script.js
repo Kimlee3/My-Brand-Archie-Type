@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     quizContainer.classList.add("hidden");
     resultContainer.classList.remove("hidden");
 
-    const cardStyle = `border-left: 8px solid ${archetypes[mainType].color}; padding: 20px; background-color: #fdfdfd; border-radius: 8px;`;
+    const cardStyle = `border-left: 8px solid ${archetypes[mainType].color}; padding: 20px; border-radius: 8px;`;
     const escapedDesc = (mainData.desc || '').replace(/`/g, '\`').replace(/\${/g, '\${');
     const escapedComment = (mainData.comment || '').replace(/`/g, '\`').replace(/\${/g, '\${');
 
