@@ -1,5 +1,3 @@
-// 통합 및 완전 작동 가능한 script.js 전체 코드 (renderUI 포함)
-
 function renderUI() {
   const langLabel = document.querySelector("label[for='lang-select']");
   const lang = localStorage.getItem("lang") || "ko";
@@ -11,14 +9,16 @@ function renderUI() {
 document.addEventListener("DOMContentLoaded", () => {
   const lang = localStorage.getItem("lang") || "ko";
   const langSelect = document.getElementById("lang-select");
-  langSelect.value = lang;
-  renderUI();
+  if (langSelect) {
+    langSelect.value = lang;
+    renderUI();
 
-  langSelect.addEventListener("change", e => {
-    const newLang = e.target.value;
-    localStorage.setItem("lang", newLang);
-    location.reload();
-  });
+    langSelect.addEventListener("change", e => {
+      const newLang = e.target.value;
+      localStorage.setItem("lang", newLang);
+      location.reload();
+    });
+  }
 
   submitBtn.addEventListener("click", () => {
     const firstUnanswered = questions.findIndex((q, idx) => {
@@ -96,14 +96,17 @@ document.addEventListener("DOMContentLoaded", () => {
     updateShareLinks(mainType, subType);
   });
 
-  document.getElementById("download-btn").addEventListener("click", () => {
-    html2canvas(document.getElementById("result-card")).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "archetype_result.png";
-      link.href = canvas.toDataURL();
-      link.click();
+  const downloadBtn = document.getElementById("download-btn");
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", () => {
+      html2canvas(document.getElementById("result-card")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "archetype_result.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
     });
-  });
+  }
 
   renderQuestions();
 });
