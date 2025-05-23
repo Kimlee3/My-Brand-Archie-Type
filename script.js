@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const lang = localStorage.getItem("lang") || "ko";
+  const langSelect = document.getElementById("lang-select");
   langSelect.value = lang;
   renderUI();
 
@@ -57,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
     resultContainer.classList.remove("hidden");
 
     const cardStyle = `border-left: 8px solid ${archetypes[mainType].color}; padding: 20px; background-color: #fdfdfd; border-radius: 8px;`;
-    const escapedDesc = (mainData.desc || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
-    const escapedComment = (mainData.comment || '').replace(/`/g, '\\`').replace(/\${/g, '\\${');
+    const escapedDesc = (mainData.desc || '').replace(/`/g, '\`').replace(/\${/g, '\${');
+    const escapedComment = (mainData.comment || '').replace(/`/g, '\`').replace(/\${/g, '\${');
 
     resultCard.innerHTML = `
       <div style="${cardStyle}">
