@@ -1,4 +1,4 @@
-// 통합 script.js (설문 + 결과 화면 + 공유 기능 포함)
+// 통합 및 완전 작동 가능한 script.js 전체 코드 (renderUI 포함)
 
 document.addEventListener("DOMContentLoaded", () => {
   const lang = localStorage.getItem("lang") || "ko";
@@ -100,8 +100,17 @@ document.addEventListener("DOMContentLoaded", () => {
   renderQuestions();
 });
 
+function renderUI() {
+  const langLabel = document.querySelector("label[for='lang-select']");
+  const lang = localStorage.getItem("lang") || "ko";
+  if (langLabel) {
+    langLabel.innerText = lang === "en" ? "Language" : lang === "de" ? "Sprache" : "언어";
+  }
+}
+
 function renderQuestions() {
   form.innerHTML = "";
+  const lang = localStorage.getItem("lang") || "ko";
   const start = currentPage * pageSize;
   const end = start + pageSize;
   const currentQuestions = questions.slice(start, end);
